@@ -5,7 +5,7 @@ from numpy.distutils.extension import Extension
 compile_opts = {
     "extra_f90_compile_args": [
         "-fopenmp", "-ffree-line-length-none", "-fdiagnostics-color=always", "-Wno-tabs"],
-    "f2py_options": ["skip:", "map_border", "calc_weights"],
+    "f2py_options": ["skip:", "map_border", "calc_weights", ":"],
     "extra_link_args": ["-fopenmp"]
 }
 
