@@ -44,8 +44,6 @@ setup(
       ext_modules=[mcm,cov],
       install_requires=requirements,
       license="BSD license",
-      #include_package_data=True,
-      #data_files=[("pspy", ["data/Planck_Parchment_RGB.txt"])],
       packages=['pspy'],
       data_files=[("data", ["data/Planck_Parchment_RGB.txt"])],
       name= "pspy",
