@@ -37,8 +37,8 @@ setup(
                    'Programming Language :: Python :: 3.6',
                    ],
       description="PSPY",
-      url= "https://github.com/simonsobs/PSpipe",
-      download_url= "https://github.com/simonsobs/PSpipe",
+      url= "https://github.com/thibautlouis/pspy",
+      download_url= "https://github.com/thibautlouis/pspy",
       package_dir={"pspy": "pspy"},
       entry_points={},
       ext_modules=[mcm,cov],
@@ -53,28 +53,4 @@ setup(
 )
 
 
-#config = {
-#    'description': 'PS PY',
-#    'author':  "The SO collaboration",
-#    'url': 'https://github.com/simonsobs/PSpipe',
-#    'download_url': 'https://github.com/simonsobs/PSpipe',
-#    'version': '0.0.1',
-#    'install_requires': [
-#        'numpy',
-#        'pixell'
-#        ],
-#    'packages': [
-#        'pspy',
-#        'pspy.wigner3j',
-#        'pspy.mcm_fortran',
-#        'pspy.cov_fortran'
-#        ],
-#    'scripts': [],
-#    'name': 'pspy',
-#    'include_package_data':True,
-#    'data_files': [('data/Planck_Parchment_RGB.txt')]
-
-#}
-
-#setup(**config)
 
