@@ -150,7 +150,7 @@ def apod_rectangle(binary,radius):
 
 def get_spinned_windows(w,lmax,niter):
     
-    """Compute the spin window functions (for pure B modes method)
+    """Compute the spinned window functions (for pure B modes method)
         
     Parameters
     ----------
