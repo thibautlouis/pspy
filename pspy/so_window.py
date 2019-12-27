@@ -1,58 +1,23 @@
 """
-@brief: python routines for window function generation
+python routines for window function generation
 """
-from __future__ import absolute_import, print_function
 import healpy as hp, pylab as plt, numpy as np, astropy.io.fits as pyfits
 from pixell import enmap,curvedsky
 from pspy import sph_tools
 import scipy
-import tempfile
 import os, sys
-import shutil
 
-#def get_distance_old(binary):
-#   """
-#   @brief get the distance to the closest masked pixels for CAR and healpix pixellisation.
-#   This routine is not ideal, for healpix we use the excecutable process mask from the healpix fortran distribution
-#   For CAR we use the scipy distance transform that assume that pixel are all of the same size.
-#   @param binary, a so_map with binary data (1 is observed, 0 is masked)
-#   @return the distance to the closest masked pixels in degree
-#   """
-#
-#       def write_dict_file(tempdir):
-#    file = open("%s/distance.dict"%tempdir,'w')
-#           file.write("mask_file=%s/tempmask \n"%tempdir)
-#           file.write("hole_min_size=0 \n")
-#        file.write("hole_min_surf_arcmin2=0.0 \n")
-#        file.write("filled_file='' \n")
-#        file.write("distance_file=%s/tempfile \n"%tempdir)
-#        file.close()
-#        return
-#
-#    dist=binary.copy()
-#    if binary.pixel=='HEALPIX':
-#
-#        tempdir=tempfile.mkdtemp()
-#        hp.fitsfunc.write_map('%s/tempmask'%tempdir, binary.data)
-#        write_dict_file(tempdir)
-#        os.system('source $HOME/.profile; process_mask %s/distance.dict'%tempdir)
-#        dist.data=hp.fitsfunc.read_map('%s/tempfile'%tempdir)
-#        shutil.rmtree(tempdir)
-#        dist.data*=180/np.pi
-#
-#    if binary.pixel=='CAR':
-#        pixSize_arcmin= np.sqrt(binary.data.pixsize()*(60*180/np.pi)**2)
-#        dist.data[:]= scipy.ndimage.distance_transform_edt(binary.data)
-#        dist.data[:]*=pixSize_arcmin/60
-#
-#    return dist
 
 def get_distance(binary):
+    
+    """Get the distance to the closest masked pixels for CAR and healpix so_map binary.
+        
+    Parameters
+    ----------
+    binary: so_map
+      a so_map with binary data (1 is observed, 0 is masked)
     """
-    @brief get the distance to the closest masked pixels for CAR and healpix pixellisation.
-    @param binary, a so_map with binary data (1 is observed, 0 is masked)
-    @return the distance to the closest masked pixels in degree
-    """
+    
     dist=binary.copy()
     if binary.pixel=='HEALPIX':
         dist.data= enmap.distance_transform_healpix(binary.data, method="heap")
@@ -65,12 +30,17 @@ def get_distance(binary):
 
 
 def create_apodization(binary, apo_type, apo_radius_degree):
-    """
-    @brief create a apodized window from a binary mask.
-    @param binary: a so map binary mask
-    @param apo_type: the type of apodisation you want to use
-    @param apo_radius: the radius of apodisation in degrees
-    @return a apodized window function
+    
+    """Create a apodized window function from a binary mask.
+    
+    Parameters
+    ----------
+    binary: so_map
+      a so_map with binary data (1 is observed, 0 is masked)
+    apo_type: string
+      the type of apodisation you want to use ("C1","C2" or "Rectangle")
+    apo_radius: float
+      the apodisation radius in degrees
     """
 
     if apo_type=='C1':
@@ -87,8 +57,16 @@ def create_apodization(binary, apo_type, apo_radius_degree):
     return window
 
 def apod_C2(binary,radius):
-    """
-    @brief C2 apodisation as defined in https://arxiv.org/pdf/0903.2350.pdf
+    
+    """Create a C2 apodisation as defined in https://arxiv.org/pdf/0903.2350.pdf
+        
+    Parameters
+    ----------
+    binary: so_map
+        a so_map with binary data (1 is observed, 0 is masked)
+    apo_radius: float
+        the apodisation radius in degrees
+
     """
     
     if radius==0:
@@ -103,8 +81,16 @@ def apod_C2(binary,radius):
     return(win)
 
 def apod_C1(binary,radius):
-    """
-    @brief C1 apodisation as defined in https://arxiv.org/pdf/0903.2350.pdf
+    
+    """Create a C1 apodisation as defined in https://arxiv.org/pdf/0903.2350.pdf
+        
+    Parameters
+    ----------
+    binary: so_map
+      a so_map with binary data (1 is observed, 0 is masked)
+    apo_radius: float
+      the apodisation radius in degrees
+        
     """
     
     if radius==0:
@@ -119,9 +105,19 @@ def apod_C1(binary,radius):
     return(win)
 
 def apod_rectangle(binary,radius):
+    
+    """Create an apodisation able for rectangle window (in CAR) (smoother at the corner)
+        
+    Parameters
+    ----------
+    binary: so_map
+      a so_map with binary data (1 is observed, 0 is masked)
+    apo_radius: float
+      the apodisation radius in degrees
+        
     """
-    @brief apodisation suitable for rectangle window (in CAR) (smoother at the corner)
-    """
+    
+    #TODO: clean this one
     
     if radius==0:
         return binary
@@ -153,6 +149,20 @@ def apod_rectangle(binary,radius):
         return(win)
 
 def get_spinned_windows(w,lmax,niter):
+    
+    """Compute the spin window functions (for pure B modes method)
+        
+    Parameters
+    ----------
+    w: so_map
+      map of the window function
+    lmax: integer
+      maximum value of the multipole for the harmonic transform
+    niter: integer
+      number of iteration for the harmonic transform
+      
+    """
+
     
     template=np.array([w.data.copy(),w.data.copy()])
     s1_a,s1_b,s2_a,s2_b=w.copy(),w.copy(),w.copy(),w.copy()
