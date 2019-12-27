@@ -1,6 +1,7 @@
 """
-python routines for window function generation
+routines for window function generation
 """
+
 import healpy as hp, pylab as plt, numpy as np, astropy.io.fits as pyfits
 from pixell import enmap,curvedsky
 from pspy import sph_tools

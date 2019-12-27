@@ -1,7 +1,6 @@
 """
-@brief: python routines for mode coupling calculation.
+Routines for mode coupling calculation.
 """
-from __future__ import absolute_import, print_function
 import healpy as hp, pylab as plt, numpy as np
 from pspy import sph_tools
 from pspy.mcm_fortran import mcm_fortran
@@ -10,18 +9,37 @@ from pspy import pspy_utils
 
 
 def mcm_and_bbl_spin0(win1, binning_file, lmax,niter, type, win2=None,bl1=None,bl2=None,input_alm=False,unbin=None,save_file=None,lmax_pad=None):
+    
+    """Get the mode coupling matrix and the binning matrix for spin0 fields
+        
+    Parameters
+    ----------
+    
+    win1: so_map (or alm)
+      the window function of survey 1, if input_alm=True, expect wlm1
+    binning_file: text file
+      a binning file with three columns bin low, bin high, bin mean
+    lmax: integer
+      the maximum multipole to consider for the spectra computation
+    type: string
+      the type of binning, either bin Cl or bin Dl
+    win2: so_map (or alm)
+      the window function of survey 2, if input_alm=True, expect wlm2
+    bl1: 1d array
+      the beam of survey 1
+    bl2: 1d array
+      the beam of survey 2
+    niter: int
+      specify the number of iteration in map2alm
+    unbin: boolean
+      return the unbinned mode coupling matrix
+    save_file: boolean
+      save the mcm and bbl to disk
+    lmax_pad: integer
+      the maximum multipole to consider for the mcm computation
+      lmax_pad should always be greater than lmax
     """
-    @brief get the mode coupling matrix and the binning matrix for spin0 fields
-    @param win1: the window function of survey 1, if input_alm=True, expect wlm1
-    @param binning_file: a binning file with format bin low, bin high, bin mean
-    @param lmax: the maximum multipole to consider
-    @param type: the type of binning, either bin Cl or bin Dl
-    @param win2: optional, the window function of survey 2, if input_alm=True, expect wlm2
-    @param bl1: optional, the beam of survey 1
-    @param bl2: optional, the beam of survey 2
-    @param niter: optional, if input_alm=False, specify the number of iteration in map2alm
-    @param return_mcm: optional, return the unbinned mode coupling matrix
-    """
+    
     if type=='Dl':
         doDl=1
     if type=='Cl':
@@ -73,18 +91,37 @@ def mcm_and_bbl_spin0(win1, binning_file, lmax,niter, type, win2=None,bl1=None,b
         return mbb_inv, Bbl
 
 def mcm_and_bbl_spin0and2(win1, binning_file,lmax,niter,type='Dl', win2=None, bl1=None,bl2=None,input_alm=False,pure=False,unbin=None,save_file=None,lmax_pad=None):
-    """
-    @brief get the mode coupling matrix and the binning matrix for spin 0 and 2 fields
-    @param win1: a python tuple (win_spin0,win_spin2) with the window functions of survey 1, if input_alm=True, expect (wlm_spin0, wlm_spin2)
-    @param binning_file: a binning file with format bin low, bin high, bin mean
-    @param lmax: the maximum multipole to consider
-    @param type: the type of binning, either bin Cl or bin Dl
-    @param win2: optional, a python tuple (win_spin0,win_spin2) with the window functions of survey 2, if input_alm=True, expect expect (wlm_spin0, wlm_spin2)
-    @param bl1: optional,  a python tuple (beam_spin0,beam_spin2) with the beam of survey 1
-    @param bl2: optional,  a python tuple (beam_spin0,beam_spin2) with the beam of survey 2
-    @param niter: optional, if input_alm=False, specify the number of iteration in map2alm
-    @param pureB: optional, do B mode purification
-    @param return_mcm: optional, return the unbinned mode coupling matrix
+    
+    """Get the mode coupling matrix and the binning matrix for spin 0 and 2 fields
+        
+    Parameters
+    ----------
+    
+    win1: python tuple of so_map or alms (if input_alm=True)
+      a python tuple (win_spin0,win_spin2) with the window functions of survey 1, if input_alm=True, expect (wlm_spin0, wlm_spin2)
+    binning_file: text file
+      a binning file with three columns bin low, bin high, bin mean
+    lmax: integer
+      the maximum multipole to consider
+    type: string
+      the type of binning, either bin Cl or bin Dl
+    win2: python tuple of so_map or alms (if input_alm=True)
+      a python tuple (win_spin0,win_spin2) with the window functions of survey 1, if input_alm=True, expect (wlm_spin0, wlm_spin2)
+    bl1: python tuple of 1d array
+      a python tuple (beam_spin0,beam_spin2) with the beam of survey 1
+    bl2: python tuple of 1d array
+      a python tuple (beam_spin0,beam_spin2) with the beam of survey 2
+    niter: int
+      specify the number of iteration in map2alm
+    pureB: boolean
+      do B mode purification
+    unbin: boolean
+      return the unbinned mode coupling matrix
+    save_file: boolean
+      save the mcm and bbl to disk
+    lmax_pad: integer
+      the maximum multipole to consider for the mcm computation
+      lmax_pad should always be greater than lmax
     """
     
     def get_coupling_dict(array,fac=1.0):
@@ -178,13 +215,19 @@ def mcm_and_bbl_spin0and2(win1, binning_file,lmax,niter,type='Dl', win2=None, bl
         return mbb_inv,Bbl
 
 def coupling_dict_to_array(dict):
-    """
-    @brief take a mcm or Bbl dictionnary with entries:
+    
+    """Take a mcm or Bbl dictionnary with entries:
+        
     -  (spin0xspin0)
+    
     -  (spin0xspin2)
+    
     -  (spin2xspin0)
+    
     -  (spin2xspin2)
-    and return a 9xdim1,9xdim2 array
+    
+    and return a 9xdim1,9xdim2 array.
+    dim1 and dim2 are the dimensions of the spin0 object
     """
 
     dim1,dim2=dict['spin0xspin0'].shape
@@ -198,13 +241,21 @@ def coupling_dict_to_array(dict):
     return array
 
 def apply_Bbl(Bbl,ps,spectra=None):
+    
+    """Bin theoretical power spectra
+        
+    Parameters
+    ----------
+
+    Bbl: 2d array (or dict of 2d array)
+        a binning matrix, if spectra is not None will be a Bbl dictionnary for spin0 and 2 fields,
+        otherwise a (n_bins,lmax) matrix
+    ps: 1d array or dict of 1d array
+      theory ps, if spectra is not None it will be a ps dictionnary, otherwise a (lmax) vector
+    spectra: list of string
+      needed for spin0 and spin2 cross correlation, the arrangement of the spectra
     """
-    @brief bin theoretical power spectra
-    @param Bbl: a binning matrix, if spectra is not None will be a Bbl dictionnary for spin0 and 2 fields, otherwise a (n_bins,lmax) matrix
-    @param ps: a theoretical power spectrum: if spectra is not None will be a ps dictionnary, otherwise a (lmax) vector
-    @param (optional) spectra,  needed for spin0 and spin2 cross correlation, the arrangement of the spectra
-    @return Dbth: a theoretical binned power spectrum
-    """
+    
     if spectra is not None:
         Bbl_array=coupling_dict_to_array(Bbl)
         ps_vec=ps[spectra[0]]
@@ -221,22 +272,49 @@ def apply_Bbl(Bbl,ps,spectra=None):
     return ps_th
 
 def save_coupling(prefix,mbb_inv,Bbl,spin_pairs=None,mcm_inv=None):
-    """
-    @brief save the inverse of the mode coupling matrix and the binning matrix in npy format
-    @param prefix: the prefix for the name of the file
-    @param mbb_inv: the inverse of the mode coupling matrix, if spin pairs is not none, should be a dictionnary with entries
-    -  (spin0xspin0)
-    -  (spin0xspin2)
-    -  (spin2xspin0)
-    -  (spin2xspin2)
-    otherwise, it will be a single matrix
-    @param Bbl,  the binning matrix,if spin pairs is not none, should be a dictionnary with entries
-    -  (spin0xspin0)
-    -  (spin0xspin2)
-    -  (spin2xspin0)
-    -  (spin2xspin2)
-    otherwise, it will be a single matrix
-    @param (optional) spin_pairs: needed for spin0 and 2 fields.
+    
+    """Save the inverse of the mode coupling matrix and the binning matrix in npy format
+        
+    Parameters
+    ----------
+
+    prefix: string
+      the prefix for the name of the file
+    mbb_inv: 2d array (or dict of 2d array)
+      the inverse of the mode coupling matrix, if spin pairs is not none, should be a dictionnary with entries
+    
+      -  spin0xspin0
+    
+      -  spin0xspin2
+    
+      -  spin2xspin0
+    
+      -  spin2xspin2
+    
+    Bbl: 2d array (or dict of 2d array)
+      the binning matrix,if spin pairs is not none, should be a dictionnary with entries
+      
+      -  spin0xspin0
+    
+      -  spin0xspin2
+    
+      -  spin2xspin0
+    
+      -  spin2xspin2
+    
+      otherwise, it will be a single matrix.
+    spin_pairs: list of strings
+      needed for spin0 and 2 fields.
+    mcm_inv: 2d array (or dict of 2d array)
+      the inverse of the unbinned mode coupling matrix, if spin pairs is not none, should be a dictionnary with entries
+      
+      -  spin0xspin0
+      
+      -  spin0xspin2
+      
+      -  spin2xspin0
+      
+      -  spin2xspin2
     """
 
     if spin_pairs is not None:
@@ -253,10 +331,17 @@ def save_coupling(prefix,mbb_inv,Bbl,spin_pairs=None,mcm_inv=None):
 
 
 def read_coupling(prefix,spin_pairs=None,unbin=None):
-    """
-    @brief read the inverse of the mode coupling matrix and the binning matrix
-    @param prefix: the prefix for the name of the file
-    @param (optional) spin_pairs: needed for spin0 and 2 fields.
+    """Read the inverse of the mode coupling matrix and the binning matrix
+        
+    Parameters
+    ----------
+
+    prefix: string
+      the prefix for the name of the file
+    spin_pairs: list of strings
+      needed for spin0 and 2 fields.
+    unbin: boolean
+      also read the unbin matrix
     """
 
     if spin_pairs is not None:

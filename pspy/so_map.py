@@ -1,6 +1,5 @@
 """
-so map class for handling healpix and CAR maps.
-
+SO map class for handling healpix and CAR maps.
 This is a wrapper around healpix and enlib (pixell).
 """
 
@@ -21,14 +20,14 @@ class so_map:
     
     def copy(self):
         
-        """ Create a copy of the so map object.
+        """ Create a copy of the so_map object.
         """
         
         return copy.deepcopy(self)
     
     def info(self):
         
-        """ Print information about the so map object.
+        """ Print information about the so_map object.
         """
         
         print ('pixellisation: ',self.pixel)
@@ -43,7 +42,7 @@ class so_map:
     
     def write_map(self,file_name):
         
-        """Write the so map to disk.
+        """Write the so_map to disk.
             
         Parameters
         ----------
@@ -58,7 +57,7 @@ class so_map:
 
     def upgrade(self,factor):
         
-        """Upgrade the so map.
+        """Upgrade the so_map.
             
         Parameters
         ----------
@@ -81,7 +80,7 @@ class so_map:
 
     def downgrade(self,factor):
         
-        """Downgrade the so map.
+        """Downgrade the so_map.
             
         Parameters
         ----------
@@ -105,7 +104,7 @@ class so_map:
     
     def synfast(self,clfile):
         
-        """Generate a cmb gaussian simulation in a so map.
+        """Generate a cmb gaussian simulation in a so_map.
         
         Parameters
         ----------
@@ -574,6 +573,7 @@ def simulate_source_mask(binary, n_holes, hole_radius_arcmin):
     Parameters
     ----------
     binary:  so_map binary template
+      the binay map in which we generate the source mask
     n_holes: integer
       the number of masked point sources
     hole_radius_arcmin: float

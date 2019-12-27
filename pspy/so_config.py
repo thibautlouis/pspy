@@ -1,5 +1,5 @@
 """
-@brief: a module to handle base configuration
+A module to handle base configuration
 """
 
 from __future__ import absolute_import, print_function
@@ -20,11 +20,11 @@ configparser = configparser.SafeConfigParser()
 configparser.optionxform = str
 
 def get_output_dir():
-    ''' return default output directory '''
+    ''' Return default output directory '''
     return DEFAULT_OUTPUT_DIR
 
 def get_data_dir():
-    ''' return default data directory '''
+    ''' Return default data directory '''
     return DEFAULT_DATA_DIR
 
 def load_config(config_file):
