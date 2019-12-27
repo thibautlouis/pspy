@@ -521,8 +521,6 @@ def car_template(ncomp,ra0,ra1,dec0,dec1,res):
     temp.coordinate='equ'
     return temp
 
-
-
 def white_noise(template,rms_uKarcmin_T,rms_uKarcmin_pol=None):
     
     """Generate a white noise realisation corresponding to the template pixellisation
