@@ -7,7 +7,6 @@ from pspy import sph_tools
 import scipy
 import os, sys
 
-
 def get_distance(binary):
     
     """Get the distance to the closest masked pixels for CAR and healpix so_map binary.
@@ -26,8 +25,8 @@ def get_distance(binary):
         pixSize_arcmin= np.sqrt(binary.data.pixsize()*(60*180/np.pi)**2)
         dist.data[:]= scipy.ndimage.distance_transform_edt(binary.data)
         dist.data[:]*=pixSize_arcmin/60
-    return dist
 
+    return dist
 
 def create_apodization(binary, apo_type, apo_radius_degree):
     
@@ -146,6 +145,7 @@ def apod_rectangle(binary,radius):
             winY.data[Ny-j-1,:]=winY.data[j,:]
 
         win.data=winX.data*winY.data
+
         return(win)
 
 def get_spinned_windows(w,lmax,niter):
@@ -163,7 +163,6 @@ def get_spinned_windows(w,lmax,niter):
       
     """
 
-    
     template=np.array([w.data.copy(),w.data.copy()])
     s1_a,s1_b,s2_a,s2_b=w.copy(),w.copy(),w.copy(),w.copy()
     
