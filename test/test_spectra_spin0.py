@@ -31,7 +31,9 @@ clfile='../data/bode_almost_wmap5_lmax_1e4_lensedCls_startAt2.dat'
 # nSplits stand for the number of splits we want to simulate
 nSplits=2
 # a binningfile with format, lmin,lmax,lmean
-binning_file='../data/BIN_ACTPOL_50_4_SC_low_ell_startAt2'
+#binning_file='../data/BIN_ACTPOL_50_4_SC_low_ell_startAt2'
+pspy_utils.create_binning_file(bin_size=40,n_bins=300,file_name='binning.dat')
+binning_file='binning.dat'
 # the maximum multipole to consider
 lmax=1000
 # the number of iteration in map2alm

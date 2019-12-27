@@ -71,6 +71,23 @@ def get_nlth_dict(rms_uKarcmin_T,type,lmax,spectra=None,rms_uKarcmin_pol=None,be
     return(nl_th)
 
 
+def create_binning_file(bin_size,n_bins,file_name=None):
+    bin_low =np.zeros(n_bins)
+    bin_hi =np.zeros(n_bins)
+    bin_cent = np.zeros(n_bins)
+    for i in range(n_bins):
+        bin_low[i]=2+bin_size*i
+        bin_hi[i]=2+bin_size*(i+1)-1
+        bin_cent[i]=(bin_low[i]+bin_hi[i])/2
+    if file_name is None:
+        return bin_low,bin_hi,bin_cent
+    else:
+        f = open('%s'%file_name,mode="w")
+        for i in range(n_bins):
+            f.write("%0.2f %0.2f %0.2f\n"%(bin_low[i],bin_hi[i],bin_cent[i]))
+        f.close()
+
+
 def read_binning_file(file,lmax):
     """
     @brief read a binningFile and truncate it to lmax, if bin_low lower than 2, set it to 2.
