@@ -86,7 +86,7 @@ class so_map:
         ----------
         factor : integer
           factor of decreased pixel resolution (should be a factor of 2)
-            
+        
         """
         
         assert( factor % 2 == 0), 'factor should be a factor of 2'
@@ -104,7 +104,7 @@ class so_map:
     
     def synfast(self,clfile):
         
-        """Generate a cmb gaussian simulation in a so_map.
+        """fill a so_map with a cmb gaussian simulation.
         
         Parameters
         ----------
@@ -114,7 +114,7 @@ class so_map:
         """
         
         if self.pixel=='HEALPIX':
-            l,ps=ps_lensed_theory_to_dict(clfile,output_type='Cl',lstart=0)
+            l,ps=ps_lensed_theory_to_dict(clfile,output_type='Cl',startAtZero=True)
             if self.ncomp==1:
                 self.data= hp.sphtfunc.synfast(ps['TT'], self.nside ,new=True, verbose=False)
             else :
@@ -133,7 +133,7 @@ class so_map:
         Parameters
         ----------
         color: cmap
-          a numpy colormap (or 'planck')
+          a matplotlib colormap (or 'planck')
         color_range: scalar for single component or len(3) list for T,Q,U.
           the range of the colorscale
         file_name: string
@@ -295,7 +295,7 @@ def read_map(file,coordinate=None,fields_healpix=None):
 
 def from_components(T,Q,U):
     
-    """Create a T,Q,U so map object from three fits files.
+    """Create a (T,Q,U) so_map object from three fits files.
         
     Parameters
     ----------
@@ -370,7 +370,7 @@ def get_box(ra0,ra1,dec0,dec1):
 
 def bounding_box_from_map(map_car):
     
-    """Get a box from a map.
+    """Get a coordinate box from a map.
         
     Parameters
     ----------
