@@ -16,9 +16,11 @@ cov = Extension(name="pspy.cov_fortran.cov_fortran",
                 sources=["pspy/cov_fortran/cov_fortran.f90", "pspy/wigner3j/wigner3j_sub.f"],
                 **compile_opts)
 
+import versioneer
 setup(
     name="pspy",
-    version= "0.0.1",
+    version= versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
     author="Simons Observatory Collaboration Power Spectrum Task Force",
     author_email="",
     classifiers=[

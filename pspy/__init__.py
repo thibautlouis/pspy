@@ -12,3 +12,7 @@ from pspy import so_config,\
     so_dict,\
     so_misc,\
     so_mpi
+
+from ._version import get_versions
+__version__ = get_versions()['version']
+del get_versions
