@@ -168,7 +168,7 @@ def naive_binning(l,fl,binning_file,lmax):
     ----------
     l: 1d integer array
       the multipoles
-    fl: 1d fload array
+    fl: 1d float array
       the 1-dimensional function to bin
     binning_file: string
       the name of the binning file
