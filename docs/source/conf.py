@@ -21,7 +21,7 @@ class Mock(MagicMock):
     def __getattr__(cls, name):
         return MagicMock()
 
-MOCK_MODULES = ['pixell','pspy.mcm_fortran','pspy.cov_fortran' ]
+MOCK_MODULES = ['pixell','pspy.mcm_fortran','pspy.cov_fortran','scipy.fftpack' ]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
