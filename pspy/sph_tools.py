@@ -1,22 +1,28 @@
 """
-@brief: python routines for generalized map2alm and alm2map.
+Routines for generalized map2alm and alm2map (healpix and CAR).
 """
-from __future__ import absolute_import, print_function
 from pixell import curvedsky,powspec
 from pspy import so_window
-import healpy as hp, pylab as plt, numpy as np, astropy.io.fits as pyfits
+import healpy as hp, pylab as plt, numpy as np
 import sys,os,copy
 
 
 def map2alm(map,niter,lmax,theta_range=None):
-    """
-    @brief general map2alm transform
-    @param map: a so map object
-    @param niter: the number of iteration performed while computing the alm
-    @param lmax: the maximum multipole of the transform
-    @param theta_range: for healpix pixellisation you can specify
-    a range [theta_min,theta_max] in radian. All pixel outside this range
-    will be assumed to be zero.
+    
+    """Map2alm transform (for healpix or CAR).
+    
+    Parameters
+    ----------
+    map:  so_map
+      the map from which to compute the alm
+    niter: integer
+      the number of iteration performed while computing the alm
+      not that for CAR niter=0 should be enough
+    lmax:  integer
+      the maximum multipole of the transform
+    theta_range: list of 2 elements
+      [theta_min,theta_max] in radian.
+      for healpix pixellisation all pixel outside this range will be assumed to be zero.
     """
     if map.pixel=='HEALPIX':
         if theta_range is None:
@@ -46,11 +52,15 @@ def map2alm(map,niter,lmax,theta_range=None):
     return alm
 
 def alm2map(alms,map):
-    """
-    @brief general alm2map transform
-    @param alms: a set of alms, the shape of alms should correspond to map.ncomp
-    @param map: a so map object
-    @return: a so map instance with value given by the alms
+    
+    """alm2map transform (for healpix and CAR).
+        
+    Parameters
+    ----------
+    alms: array
+      a set of alms, the shape of alms should correspond to map.ncomp
+    map:  so_map
+      the map template that will contain the results of the harmonic transform
     """
     if map.ncomp==1:
         spin=0
@@ -66,15 +76,23 @@ def alm2map(alms,map):
     return map
 
 def get_alms(map,window,niter,lmax,theta_range=None):
-    """
-    @brief get a map, multiply by a window and return alm
-    @param map: so map containing the data
-    @param windw: a so map with the window function, if the so map has 3 components
-    (for spin0 and 2 fields) expect a tuple (window,window_pol)
-    @param (optional) theta range: for healpix pixellisation you can specify
-    a range [theta_min,theta_max] in radian. All pixel outside this range
-    will be assumed to be zero.
-    @return: the alms
+    
+    """Get a map, multiply by a window and return alms
+    This is basically map2alm but with application of the
+    window functions.
+        
+    Parameters
+    ----------
+
+    map: so_map
+      the data we wants alms from
+    window: so_map or tuple of so_map
+      a so map with the window function, if the so map has 3 components
+      (for spin0 and 2 fields) expect a tuple (window,window_pol)
+    theta range: list of 2 elements
+      for healpix pixellisation you can specify
+      a range [theta_min,theta_max] in radian. All pixel outside this range
+      will be assumed to be zero.
     """
     windowed_map=map.copy()
     if map.ncomp ==3:
@@ -88,6 +106,25 @@ def get_alms(map,window,niter,lmax,theta_range=None):
 
 
 def get_pure_alms(map,window,niter,lmax):
+    
+    """Compute pure alms from maps and window function
+        
+    Parameters
+    ----------
+        
+    map: so_map
+      the data we wants alms from
+    window: so_map or tuple of so_map
+      a so map with the window function, if the so map has 3 components
+      (for spin0 and 2 fields) expect a tuple (window,window_pol)
+    niter: integer
+      the number of iteration performed while computing the alm
+      not that for CAR niter=0 should be enough
+    lmax:  integer
+      the maximum multipole of the transform
+
+    """
+
     
     s1_a,s1_b,s2_a,s2_b=so_window.get_spinned_windows(window[1],lmax,niter=niter)
     p2 = np.array([window[1].data*map.data[1], window[1].data*map.data[2]])
