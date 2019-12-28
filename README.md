@@ -1,5 +1,5 @@
 # pspy
 
-python power spectrum library, see doc in:
+python power spectrum library
 
 https://pspy.readthedocs.io/en/latest/
