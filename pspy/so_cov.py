@@ -1,8 +1,6 @@
 """
-@brief: python tools for analytical covariance matrix estimation.
+Tools for analytical covariance matrix estimation.
 """
-from __future__ import print_function
-from copy import deepcopy
 from pspy import so_map,so_window,so_mcm,sph_tools,so_spectra, pspy_utils, so_dict
 import healpy as hp, numpy as np, pylab as plt
 from pspy.cov_fortran import cov_fortran
@@ -10,14 +8,24 @@ import os,sys
 import pickle 
 
 def cov_coupling_spin0(win, lmax, niter=0,save_file=None):
+    
+    """compute the coupling kernels corresponding to the T only covariance matrix
+        see Section IV A of https://www.overleaf.com/read/fvrcvgbzqwrz
+   
+   Parameters
+    ----------
+
+    win: so_map or dictionnary of so_map
+      the window functions, can be a so_map or a dictionnary containing so_map
+      if the later, the entry of the dictionnary should be Ta,Tb,Tc,Td.
+    lmax: integer
+      the maximum multipole to consider
+    niter: int
+      the number of iteration performed while computing the alm
+    save_file: string
+      the name of the file in which the coupling kernel will be saved (npy format)
     """
-    @brief compute the coupling kernels corresponding to the T only covariance matrix of https://www.overleaf.com/read/fvrcvgbzqwrz
-    @param win: the window functions, can be a so_map or a dictionnary containing so_map
-                if the later, the entry of the dictionnary should be Ta,Tb,Tc,Td
-    @param lmax: the maximum multipole to consider
-    @param (optional) niter: the number of iteration performed while computing the alm
-    @param (optional) save_file: the file in which the coupling kernel will be saved
-    """
+    
     coupling_dict={}
     if type(win) is not dict:
         sq_win=win.copy()
@@ -56,14 +64,24 @@ def cov_coupling_spin0(win, lmax, niter=0,save_file=None):
 
 
 def cov_coupling_spin0and2(win, lmax, niter=0,save_file=None):
+    
+    """Compute the coupling kernels corresponding to the T and E covariance matrix
+        see Section IV B of https://www.overleaf.com/read/fvrcvgbzqwrz
+        
+    Parameters
+    ----------
+    
+    win: so_map or dictionnary of so_map
+      the window functions, can be a so_map or a dictionnary containing so_map
+      if the later, the entry of the dictionnary should be Ta,Tb,Tc,Td,Pa,Pb,Pc,Pd
+    lmax: integer
+      the maximum multipole to consider
+    niter: int
+      the number of iteration performed while computing the alm
+    save_file: string
+      the name of the file in which the coupling kernel will be saved (npy format)
     """
-    @brief compute the coupling kernels corresponding to the T and E  covariance matrix of https://www.overleaf.com/read/fvrcvgbzqwrz
-    @param win: the window functions, can be a so_map or a dictionnary containing so_map
-    if the later, the entry of the dictionnary should be Ta,Tb,Tc,Td,Pa,Pb,Pc,Pd
-    @param lmax: the maximum multipole to consider
-    @param (optional) niter: the number of iteration performed while computing the alm
-    @param (optional) save_file: the file in which the coupling kernel will be saved
-    """
+    
     win_list=['TaTcTbTd','TaTdTbTc','PaPcPbPd','PaPdPbPc','TaTcPbPd','TaPdPbTc','TaTcTbPd','TaPdTbTc','TaPcTbPd','TaPdTbPc','PaTcPbPd','PaPdPbTc']
     
     coupling_dict={}
@@ -112,10 +130,17 @@ def cov_coupling_spin0and2(win, lmax, niter=0,save_file=None):
 
 
 def read_coupling(file):
-    """
-    @brief read a precomputed coupling kernels
+    
+    """Read a precomputed coupling kernels
     the code use the size of the array to infer what type of survey it corresponds to
+    
+    Parameters
+    ----------
+    
+    file: string
+      the name of the npy file
     """
+    
     coupling=np.load('%s.npy'%file)
     coupling_dict={}
     if coupling.shape[0]==12:
@@ -136,24 +161,36 @@ def read_coupling(file):
     return coupling_dict
 
 def symmetrize(Clth,mode='arithm'):
+    
+    """Take a power spectrum Cl and return a symmetric array C_l1l2=f(Cl)
+    
+    Parameters
+    ----------
+    Clth: 1d array
+      the power spectrum to be made symmetric
+    mode : string
+      geometric or arithmetic mean
+      if geo return C_l1l2= sqrt( |Cl1 Cl2 |)
+      if arithm return C_l1l2= (Cl1 + Cl2)/2
     """
-    @brief take a power spectrum Cl and return a symmetric array C_l1l2=f(Cl)
-    @param mode (optional): geometric or arithmetic mean
-    if geo return C_l1l2= sqrt( |Cl1 Cl2 |)
-    if arithm return C_l1l2= (Cl1 + Cl2)/2
-    default is arithmetic mean that can more easily deal with negative power spectrum
-    """
+    
     if mode=='geo':
         return np.sqrt(np.abs(np.outer(Clth,Clth)))
     if mode=='arithm':
         return np.add.outer(Clth, Clth)/2
 
 def bin_mat(mat,binning_file,lmax):
+    
+    """Take a matrix and bin it Mbb'= Pbl Pb'l' Mll' with  Pbl =1/Nb sum_(l in b)
+        
+    Parameters
+    ----------
+    binning_file: data file
+      a binning file with format bin low, bin high, bin mean
+    lmax: int
+      the maximum multipole to consider
     """
-    @brief take a matrix and bin it Mbb'= Pbl Pb'l' Mll' with  Pbl =1/Nb sum_(l in b)
-    @param binning_file: a binning file with format bin low, bin high, bin mean
-    @param lmax: the maximum multipole to consider
-    """
+    
     bin_lo,bin_hi,bin_c,bin_size= pspy_utils.read_binning_file(binning_file,lmax)
     n_bins=len(bin_hi)
     coupling_b=np.zeros((n_bins,n_bins))
@@ -163,30 +200,52 @@ def bin_mat(mat,binning_file,lmax):
     return coupling_b
 
 def cov_spin0(Clth_dict,coupling_dict,binning_file,lmax,mbb_inv_ab,mbb_inv_cd):
+    
+    """From the two point functions and the coupling kernel construct the spin0 analytical covariance matrix of <(C_ab- Clth)(C_cd-Clth)>
+        
+    Parameters
+    ----------
+
+    Clth_dict: dictionnary
+      A dictionnary of theoretical power spectrum (auto and cross) for the different split combinaison ('TaTb' etc)
+    coupling_dict: dictionnary
+      a dictionnary containing the coupling kernel
+    binning_file: data file
+      a binning file with format bin low, bin high, bin mean
+    lmax: int
+      the maximum multipole to consider
+    mbb_inv_ab: 2d array
+      the inverse mode coupling matrix for the 'TaTb' power spectrum
+    mbb_inv_cd: 2d array
+      the inverse mode coupling matrix for the 'TcTd' power spectrum
     """
-    @brief from the two point functions and the coupling kernel construct the spin0 analytical covariance matrix of <(C_ab- Clth)(C_cd-Clth)>
-    @param Clth_dict: a dictionnary of theoretical power spectrum (auto and cross) for the different split combinaison ('TaTb' etc)
-    @param coupling_dict: a dictionnary containing the coupling kernel
-    @param binning_file: a binning file with format bin low, bin high, bin mean
-    @param lmax: the maximum multipole to consider
-    @param mbb_inv_ab: the inverse mode coupling matrix for the 'TaTb' power spectrum
-    @param mbb_inv_cd: the inverse mode coupling matrix for the 'TcTd' power spectrum
-    """
+    
     cov=symmetrize(Clth_dict['TaTc'])*symmetrize(Clth_dict['TbTd'])*coupling_dict['TaTcTbTd']+ symmetrize(Clth_dict['TaTd'])*symmetrize(Clth_dict['TbTc'])*coupling_dict['TaTdTbTc']
     analytic_cov=bin_mat(cov,binning_file,lmax)
     analytic_cov=np.dot(np.dot(mbb_inv_ab,analytic_cov),mbb_inv_cd.T)
     return analytic_cov
 
 def cov_spin0and2(Clth_dict,coupling_dict,binning_file,lmax,mbb_inv_ab,mbb_inv_cd):
+    
+    """From the two point functions and the coupling kernel construct the T and E analytical covariance matrix of <(C_ab- Clth)(C_cd-Clth)>
+        
+    Parameters
+    ----------
+        
+    Clth_dict: dictionnary
+      A dictionnary of theoretical power spectrum (auto and cross) for the different split combinaison ('XaYb' etc)
+    coupling_dict: dictionnary
+      a dictionnary containing the coupling kernel
+    binning_file: data file
+      a binning file with format bin low, bin high, bin mean
+    lmax: int
+      the maximum multipole to consider
+    mbb_inv_ab: 2d array
+      the inverse mode coupling matrix for the 'XaYb' power spectrum
+    mbb_inv_cd: 2d array
+      the inverse mode coupling matrix for the 'XcYd' power spectrum
     """
-    @brief from the two point functions and the coupling kernel construct the T and E analytical covariance matrix of <(C_ab- Clth)(C_cd-Clth)>
-    @param Clth_dict: a dictionnary of theoretical power spectrum (auto and cross) for the different split combinaison ('TaTb' etc)
-    @param coupling_dict: a dictionnary containing the coupling kernel
-    @param binning_file: a binning file with format bin low, bin high, bin mean
-    @param lmax: the maximum multipole to consider
-    @param mbb_inv_ab: the inverse mode coupling matrix for the 'ab' power spectra
-    @param mbb_inv_cd: the inverse mode coupling matrix for the 'cd' power spectra
-    """
+    
     TaTc,TbTd,TaTd,TbTc=symmetrize(Clth_dict['TaTc']),symmetrize(Clth_dict['TbTd']),symmetrize(Clth_dict['TaTd']),symmetrize(Clth_dict['TbTc'])
     EaEc,EbEd,EaEd,EbEc=symmetrize(Clth_dict['EaEc']),symmetrize(Clth_dict['EbEd']),symmetrize(Clth_dict['EaEd']),symmetrize(Clth_dict['EbEc'])
     TaEd,TaEc,TbEc,TbEd,EaTc,EbTc=symmetrize(Clth_dict['TaEd']), symmetrize(Clth_dict['TaEc']), symmetrize(Clth_dict['TbEc']), symmetrize(Clth_dict['TbEd']), symmetrize(Clth_dict['EaTc']), symmetrize(Clth_dict['EbTc'])
@@ -208,14 +267,21 @@ def cov_spin0and2(Clth_dict,coupling_dict,binning_file,lmax,mbb_inv_ab,mbb_inv_c
     mbb_inv_cd=extract_TTTEEE_mbb(mbb_inv_cd)
     
     analytic_cov=np.dot(np.dot(mbb_inv_ab,analytic_cov),mbb_inv_cd.T)
+    
     return analytic_cov
 
 def extract_TTTEEE_mbb(mbb_inv):
-    """
-    @brief The mode coupling marix is computed for T,E,B but for now we only construct analytical covariance matrix for T and E
+    
+    """The mode coupling marix is computed for T,E,B but for now we only construct analytical covariance matrix for T and E
     The B modes is complex with important E->B leakage, this routine extract the T and E part of the mode coupling matrix
-    @param mbb_inv: the inverse spin0 and 2 mode coupling matrix
+    
+    Parameters
+    ----------
+    
+    mbb_inv: 2d array
+      the inverse spin0 and 2 mode coupling matrix
     """
+    
     mbb_inv_array=so_mcm.coupling_dict_to_array(mbb_inv)
     mbb_array=np.linalg.inv(mbb_inv_array)
     n_bins=int(mbb_array.shape[0]/9)
@@ -227,22 +293,36 @@ def extract_TTTEEE_mbb(mbb_inv):
     return mbb_inv_array
 
 def cov2corr(cov):
+    
+    """Go from covariance to correlation matrix, also setting the diagonal to zero
+        
+    Parameters
+    ----------
+    cov: 2d array
+      the covariance matrix
     """
-    @brief go from covariance to correlation, also setting the diagonal to zero
-    @param cov: the covariance matrix
-    """
+    
     d = np.sqrt(cov.diagonal())
     corr = ((cov.T/d).T)/d - np.identity(cov.shape[0])
     return corr
 
 def selectblock(cov, spectra,n_bins,block='TTTT'):
+    
+    """Select a block in a spin0 and 2 covariance matrix
+        
+    Parameters
+    ----------
+
+    cov: 2d array
+      the covariance matrix
+    spectra: list of strings
+      the arangement of the different block
+    n_bins: int
+      the number of bins for each block
+    block: string
+      the block you want to look at
     """
-    @brief select a block in a spin0 and 2 covariance matrix
-    @param cov: the covariance matrix
-    @param spectra: the arangement of the different block
-    @param n_bins: the number of bins for each block
-    @param block: the block you want to look at
-    """
+    
     if spectra==None:
         print ('cov mat of spin 0, no block selection needed')
         return
@@ -257,17 +337,18 @@ def selectblock(cov, spectra,n_bins,block='TTTT'):
     return cov_select
 
 def delta2(a,b):
+    
+    """Simple delta function
     """
-    @brief simple delta function
-    """
+    
     if a==b:
         return 1
     else:
         return 0
 
 def delta3(a,b,c):
-    """
-    @brief delta function (3 variables)
+    
+    """Delta function (3 variables)
     """
 
     if (a==b) & (b==c):
@@ -276,8 +357,8 @@ def delta3(a,b,c):
         return 0
 
 def delta4(a,b,c,d):
-    """
-    @brief delta function (4 variables)
+    
+    """Delta function (4 variables)
     """
     
     if (a==b) & (b==c) & (c==d):
@@ -286,8 +367,8 @@ def delta4(a,b,c,d):
         return 0
 
 def f(a,b,c,d,ns):
-    """
-    @brief f combination factor in the covariance computation
+    
+    """f combination factor in the covariance computation (https://www.overleaf.com/read/fvrcvgbzqwrz)
     """
 
     result= 1.*ns[a]*(ns[c]*ns[d]*delta2(a,b)-ns[c]*delta3(a,b,d)-ns[d]*delta3(a,b,c)+delta4(a,b,c,d))
@@ -295,8 +376,8 @@ def f(a,b,c,d,ns):
     return result
 
 def g(a,b,c,d,ns):
-    """
-    @brief g combination factor in the covariance computation
+    
+    """g combination factor in the covariance computation (https://www.overleaf.com/read/fvrcvgbzqwrz)
     """
     
     result= 1.*ns[a]*(ns[c]*delta2(a,b)*delta2(c,d)-delta4(a,b,c,d))
@@ -304,15 +385,12 @@ def g(a,b,c,d,ns):
     return result
 
 def chi(alpha,gamma,beta,eta,ns,ls,Dl,DNl,id='TTTT'):
-    """
-    @brief not ready yet
+    """doc not ready yet
     """
     exp_alpha,f_alpha=alpha.split('_')
     exp_beta,f_beta=beta.split('_')
     exp_gamma,f_gamma=gamma.split('_')
     exp_eta,f_eta=eta.split('_')
-
-#print (exp_alpha,exp_beta,exp_gamma,exp_eta)
     
     RX=id[0]+id[2]
     SY=id[1]+id[3]
@@ -327,21 +405,6 @@ def chi(alpha,gamma,beta,eta,ns,ls,Dl,DNl,id='TTTT'):
     print (r'f_{%s %s}^{%s %s}'%(exp_alpha,exp_gamma,exp_beta,exp_eta),f(exp_alpha,exp_gamma,exp_beta,exp_eta,ns))
     print (r'g_{%s %s %s %s}'%(exp_alpha,exp_gamma,exp_beta,exp_eta),g(exp_alpha,exp_gamma,exp_beta,exp_eta,ns))
     
-    
-#    plt.figure()
-#    plt.subplot(2,2,1)
-#    plt.plot(Dl[alpha,gamma,RX], label=r'Dl^{%s}_{%s, %s}'%(RX,alpha,gamma))
-#    plt.legend()
-#    plt.subplot(2,2,2)
-#    plt.plot(Dl[beta,eta,SY], label=r'Dl^{%s}_{%s, %s}'%(SY,beta,eta))
-#    plt.legend()
-#    plt.subplot(2,2,3)
-#    plt.plot(DNl[beta,eta,SY], label=r'Nl^{%s}_{%s, %s}'%(SY,beta,eta))
-#    plt.legend()
-#    plt.subplot(2,2,4)
-#    plt.plot(DNl[alpha,gamma,RX], label=r'Nl^{%s}_{%s, %s}'%(RX,alpha,gamma))
-#    plt.legend()
-#    plt.show()
 
     chi= symmetrize(chi,mode='arithm')
     
@@ -349,10 +412,11 @@ def chi(alpha,gamma,beta,eta,ns,ls,Dl,DNl,id='TTTT'):
 
 
 def calc_cov_lensed(noise_uK_arcmin, fwhm_arcmin, lmin, lmax, camb_lensed_theory_file, camb_unlensed_theory_file, output_dir, overwrite=False):
-    """
-    @brief wrapper around lenscov (https://github.com/JulienPeloton/lenscov). heavily borrowed from covariance.py
+    
+    """ wrapper around lenscov (https://github.com/JulienPeloton/lenscov). heavily borrowed from covariance.py
     compute lensing induced non-gaussian part of covariance matrix
     """
+    
     try:
         import lib_covariances, lib_spectra, misc, util
     except:
@@ -396,9 +460,9 @@ def calc_cov_lensed(noise_uK_arcmin, fwhm_arcmin, lmin, lmax, camb_lensed_theory
             file_manager.save_data_on_disk(array_to_save)
 
 def load_cov_lensed(cov_lensed_file, include_gaussian_part=False):
-    """
-    @brief wrapper around lenscov (https://github.com/JulienPeloton/lenscov). 
-    @param include_gaussian_part: if False, it returns only lensing induced non-gaussin parts
+    
+    """wrapper around lenscov (https://github.com/JulienPeloton/lenscov).
+    include_gaussian_part: if False, it returns only lensing induced non-gaussin parts
     """
     covs = {}
 
