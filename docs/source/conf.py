@@ -24,7 +24,6 @@ class Mock(MagicMock):
 MOCK_MODULES = ['pixell']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
-import pspy
 
 # -- Project information -----------------------------------------------------
 
