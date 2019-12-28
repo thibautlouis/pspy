@@ -12,10 +12,11 @@ before_install:
   - sudo apt-get -y install gfortran
   - gfortran --version
   - python --version
-  # - pip install camb
+  - python -m pip install numpy
+  # - python -m pip install camb
 
 install:
-  - pip install .
+  - python -m pip install .
 
 script:
   # - python -m unittest mflike.tests.test_mflike
