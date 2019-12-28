@@ -1,5 +1,5 @@
 """
-@brief: utils for pspy.
+Utils for pspy.
 """
 from __future__ import absolute_import, print_function
 import healpy as hp, pylab as plt, numpy as np
