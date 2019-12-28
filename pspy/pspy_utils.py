@@ -107,6 +107,11 @@ def create_binning_file(bin_size,n_bins,lmax=None, file_name=None):
     bin_low = bins * bin_size + 2
     bin_hi = (bins + 1) * bin_size + 1
     bin_cent = (bin_low + bin_hi) / 2
+    
+    if lmax is not None:
+        id = np.where(bin_hi <lmax)
+        bin_lo,bin_hi,bin_c=bin_lo[id],bin_hi[id],bin_c[id]
+
     if file_name is None:
         return bin_low, bin_hi, bin_cent
     else:
