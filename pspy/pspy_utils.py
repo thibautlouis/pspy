@@ -6,9 +6,9 @@ import healpy as hp, pylab as plt, numpy as np
 import os
 
 def ps_lensed_theory_to_dict(filename,output_type,lmax=None,startAtZero=False):
-    
+
     """Read a lensed power spectrum from CAMB and return a dictionnary
-        
+
     Parameters
     ----------
     filename : string
@@ -19,15 +19,15 @@ def ps_lensed_theory_to_dict(filename,output_type,lmax=None,startAtZero=False):
       'Cl' or 'Dl'
     startAtZero : boolean
       if True, ps start at l=0 and cl(l=0) and cl(l=1) are set to 0
-      
+
     """
-    
+
     fields=['TT','TE','TB','ET','BT','EE','EB','BE','BB']
     ps={}
     l,ps['TT'],ps['EE'],ps['BB'],ps['TE']=np.loadtxt(filename,unpack=True)
     ps['ET']=ps['TE'].copy()
     ps['TB'],ps['BT'],ps['EB'],ps['BE']=np.zeros((4,len(l)))
-    
+
     if lmax is not None:
         l=l[:lmax]
     scale=l*(l+1)/(2*np.pi)
@@ -43,9 +43,9 @@ def ps_lensed_theory_to_dict(filename,output_type,lmax=None,startAtZero=False):
     return l,ps
 
 def get_nlth_dict(rms_uKarcmin_T,type,lmax,spectra=None,rms_uKarcmin_pol=None,beamfile=None):
-   
+
     """ Return the effective noise power spectrum Nl/bl^2 given a beam file and a noise rms
-        
+
     Parameters
     ----------
     rms_uKarcmin_T: float
@@ -61,7 +61,7 @@ def get_nlth_dict(rms_uKarcmin_T,type,lmax,spectra=None,rms_uKarcmin_pol=None,be
     beamfile: string
       the name of the beam transfer function (assuming it's given as a two column file l,bl)
     """
-    
+
     if beamfile is not None:
         l,bl=np.loadtxt(beamfile,unpack=True)
     else:
@@ -89,9 +89,9 @@ def get_nlth_dict(rms_uKarcmin_T,type,lmax,spectra=None,rms_uKarcmin_pol=None,be
 
 
 def create_binning_file(bin_size,n_bins,lmax=None, file_name=None):
-    
+
     """ Create a (constant) binning file, and optionnaly write it to disk
-    
+
     Parameters
     ----------
     bin_size: float
@@ -103,21 +103,12 @@ def create_binning_file(bin_size,n_bins,lmax=None, file_name=None):
     file_name: string
       the name of the binning file
     """
-    
-    bin_low =np.zeros(n_bins)
-    bin_hi =np.zeros(n_bins)
-    bin_cent = np.zeros(n_bins)
-    for i in range(n_bins):
-        bin_low[i]=2+bin_size*i
-        bin_hi[i]=2+bin_size*(i+1)-1
-        bin_cent[i]=(bin_low[i]+bin_hi[i])/2
-    
-    if lmax is not None:
-        id = np.where(bin_hi <lmax)
-        bin_lo,bin_hi,bin_c=bin_lo[id],bin_hi[id],bin_c[id]
-
+    bins = np.arange(n_bins)
+    bin_low = bins * bin_size + 2
+    bin_hi = (bins + 1) * bin_size + 1
+    bin_cent = (bin_low + bin_hi) / 2
     if file_name is None:
-        return bin_low,bin_hi,bin_cent
+        return bin_low, bin_hi, bin_cent
     else:
         f = open('%s'%file_name,mode="w")
         for i in range(n_bins):
@@ -125,12 +116,11 @@ def create_binning_file(bin_size,n_bins,lmax=None, file_name=None):
         f.close()
 
 
-def read_binning_file(file,lmax):
-    
-    
+def read_binning_file(file_name, lmax):
+
     """Read a binningFile and truncate it to lmax, if bin_low lower than 2, set it to 2.
     format is bin_low, bin_high, bin_mean
-    
+
     Parameters
     ----------
     binningfile: string
@@ -138,8 +128,8 @@ def read_binning_file(file,lmax):
     lmax: integer
       the maximum multipole to consider
     """
-    
-    bin_lo,bin_hi,bin_c = plt.loadtxt(file,unpack=True)
+
+    bin_lo,bin_hi,bin_c = plt.loadtxt(file_name,unpack=True)
     id = np.where(bin_hi <lmax)
     bin_lo,bin_hi,bin_c=bin_lo[id],bin_hi[id],bin_c[id]
     if bin_lo[0]<2:
@@ -150,25 +140,25 @@ def read_binning_file(file,lmax):
     return (bin_lo,bin_hi,bin_c,bin_size)
 
 def create_directory(name):
-    
+
     """Create a directory
-        
+
     Parameters
     ----------
     name: string
       the name of the directory
 
     """
-    
+
     try:
         os.makedirs(name)
     except:
         pass
 
 def naive_binning(l,fl,binning_file,lmax):
-    
+
     """bin a function of l given a binning file and lmax
-        
+
     Parameters
     ----------
     l: 1d integer array
@@ -189,4 +179,3 @@ def naive_binning(l,fl,binning_file,lmax):
         loc = np.where((l >= bin_lo[ibin]) & (l <= bin_hi[ibin]))
         fl_bin[ibin] = (fl[loc]).mean()
     return bin_c,fl_bin
-
