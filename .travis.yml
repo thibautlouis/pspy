@@ -13,6 +13,7 @@ before_install:
   - gfortran --version
   - python --version
   - python -m pip install numpy
+  - python -m pip install cython
   # - python -m pip install camb
 
 install:
