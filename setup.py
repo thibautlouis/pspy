@@ -1,6 +1,7 @@
 import setuptools
-from numpy.distutils.core import setup
-from numpy.distutils.extension import Extension
+from setuptools import setup, Extension
+#from numpy.distutils.core import setup
+#from numpy.distutils.extension import Extension
 
 compile_opts = {
     "extra_f90_compile_args": [
