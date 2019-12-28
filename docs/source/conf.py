@@ -21,6 +21,8 @@ project = 'pspy'
 copyright = '2019, T. Louis, S. Choi, DW Han, X. Garrido'
 author = 'T. Louis, S. Choi, DW Han, X. Garrido'
 
+master_doc = 'index'
+
 
 # -- General configuration ---------------------------------------------------
 
