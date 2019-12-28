@@ -10,6 +10,7 @@ python:
 before_install:
   - sudo apt-get update
   - sudo apt-get -y install gfortran
+  - sudo apt-get -y install fftw3
   - gfortran --version
   - python --version
   - python -m pip install numpy
