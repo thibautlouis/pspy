@@ -1,3 +1,2 @@
 numpy
 camb
-pspy @ git+https://github.com/thibautlouis/pspy@master#egg=pspy
