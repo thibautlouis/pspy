@@ -30,10 +30,6 @@ ncomp=1
 clfile='../data/bode_almost_wmap5_lmax_1e4_lensedCls_startAt2.dat'
 # nSplits stand for the number of splits we want to simulate
 nSplits=2
-# a binningfile with format, lmin,lmax,lmean
-#binning_file='../data/BIN_ACTPOL_50_4_SC_low_ell_startAt2'
-pspy_utils.create_binning_file(bin_size=40,n_bins=300,file_name='binning.dat')
-binning_file='binning.dat'
 # the maximum multipole to consider
 lmax=1000
 # the number of iteration in map2alm
@@ -56,6 +52,10 @@ try:
     os.makedirs(test_dir)
 except:
     pass
+
+# create a binningfile with format, lmin,lmax,lmean
+pspy_utils.create_binning_file(bin_size=40,n_bins=300,file_name='%s/binning.dat'%test_dir)
+binning_file='%s/binning.dat'%test_dir
 
 # the templates for the CMB splits
 template_car= so_map.car_template(ncomp,ra0,ra1,dec0,dec1,res)
@@ -106,7 +106,7 @@ for run,apo_type,binary,template in zip(run_name,apo_type_list,binary_list,templ
     #we then apodize the survey mask
     window=so_window.create_apodization(binary, apo_type=apo_type, apo_radius_degree=apo_radius_degree_survey)
     #we create a point source mask
-    mask=so_map.simulate_source_mask(binary, nholes=source_mask_nholes, hole_radius_arcmin=source_mask_radius)
+    mask=so_map.simulate_source_mask(binary, n_holes=source_mask_nholes, hole_radius_arcmin=source_mask_radius)
     #... and we apodize it
     mask= so_window.create_apodization(mask, apo_type='C1', apo_radius_degree=apo_radius_degree_mask)
     #the window is given by the product of the survey window and the mask window

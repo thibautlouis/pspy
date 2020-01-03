@@ -62,7 +62,7 @@ split.data+=noise.data
 #we then apodize the survey mask
 window=so_window.create_apodization(binary, apo_type='C1', apo_radius_degree=apo_radius_degree_survey)
 #we create a point source mask
-mask=so_map.simulate_source_mask(binary, nholes=source_mask_nholes, hole_radius_arcmin=source_mask_radius)
+mask=so_map.simulate_source_mask(binary, n_holes=source_mask_nholes, hole_radius_arcmin=source_mask_radius)
 #... and we apodize it
 mask= so_window.create_apodization(mask, apo_type='C1', apo_radius_degree=apo_radius_degree_mask)
 #the window is given by the product of the survey window and the mask window
