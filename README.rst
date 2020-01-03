@@ -9,10 +9,16 @@ Python power spectrum library
 https://pspy.readthedocs.io/en/latest/
 
 
+Installing the code
+-------------------
+
+.. code:: shell
+
     $ git clone https://github.com/thibautlouis/pspy.git /where/to/clone
 
 Then you can install the ``pspy`` library and its dependencies *via*
 
+.. code:: shell
 
     $ pip install -e /where/to/clone
 
