@@ -7,7 +7,7 @@ pspy
 .. image:: https://readthedocs.org/projects/pspy/badge/?version=latest
    :target: https://pspy.readthedocs.io/en/latest/?badge=latest
 .. image:: https://mybinder.org/badge_logo.svg
-   :target: https://mybinder.org/v2/gh/thibautlouis/pspy/master?filepath=index.ipynb
+   :target: https://mybinder.org/v2/gh/thibautlouis/pspy/master?filepath=notebooks/%2Findex.ipynb
 
 Python power spectrum library
 
