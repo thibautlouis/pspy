@@ -7,3 +7,17 @@
 Python power spectrum library
 
 https://pspy.readthedocs.io/en/latest/
+
+.. code:: shell
+
+    $ git clone https://github.com/thibautlouis/pspy.git /where/to/clone
+
+Then you can install the ``pspy`` library and its dependencies *via*
+
+.. code:: shell
+
+    $ pip install -e /where/to/clone
+
+The ``-e`` option allow the developer to make changes within the ``pspy`` directory without having
+to reinstall at every changes. If you plan to just use the likelihood and do not develop it, you can
+remove the ``-e`` option.
