@@ -1,8 +1,11 @@
 # pspy
 
-[![Build Status](https://travis-ci.com/thibautlouis/pspy.svg?branch=master)](https://travis-ci.com/thibautlouis/pspy)
-[![Documentation Status](https://readthedocs.org/projects/pspy/badge/?version=latest)](https://pspy.readthedocs.io/en/latest/?badge=latest)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/thibautlouis/pspy/master?filepath=index.ipynb)
+.. image:: https://travis-ci.com/thibautlouis/pspy.svg?branch=master
+   :target: https://travis-ci.com/thibautlouis/pspy
+.. image:: https://readthedocs.org/projects/pspy/badge/?version=latest
+   :target: https://pspy.readthedocs.io/en/latest/?badge=latest
+.. image:: https://mybinder.org/badge_logo.svg)
+   :target: https://mybinder.org/v2/gh/thibautlouis/pspy/master?filepath=index.ipynb
 
 Python power spectrum library
 
