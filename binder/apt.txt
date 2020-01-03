@@ -1,0 +1,3 @@
+python-numpy
+gfortran
+libfftw3-dev
