@@ -13,17 +13,20 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../..'))
-sys.path.insert(0,os.path.abspath('../../pspy'))
+sys.path.insert(0, os.path.abspath('../../pspy'))
 from mock import Mock as MagicMock
+
 
 class Mock(MagicMock):
     @classmethod
     def __getattr__(cls, name):
         return MagicMock()
 
-MOCK_MODULES = ['pixell','pspy.mcm_fortran','pspy.cov_fortran','scipy.fftpack' ]
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
+MOCK_MODULES = [
+    'pixell', 'pspy.mcm_fortran', 'pspy.cov_fortran', 'scipy.fftpack'
+]
+sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 # -- Project information -----------------------------------------------------
 
@@ -32,7 +35,6 @@ copyright = '2019, T. Louis, S. Choi, DW Han, X. Garrido'
 author = 'T. Louis, S. Choi, DW Han, X. Garrido'
 
 master_doc = 'index'
-
 
 # -- General configuration ---------------------------------------------------
 
@@ -47,12 +49,10 @@ templates_path = ['_templates']
 # Present auto-documented members in source order (rather than alphabetical).
 autodoc_member_order = 'bysource'
 
-
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = [u'_build', 'Thumbs.db', '.DS_Store']
-
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -66,4 +66,5 @@ html_theme = 'sphinx_rtd_theme'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-html_extra_path = ['../tutorial_projection.html']
+# Add paths to extra static html files from notebook conversion
+html_extra_path = ['notebooks']

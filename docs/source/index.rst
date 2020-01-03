@@ -11,9 +11,12 @@ If you want to work on the code from `GitHub <https://github.com/thibautlouis/ps
 Ipython notebooks:
 ==================
 
-`projecting HEALPIX to CAR  <https://pspy.readthedocs.org/en/latest/tutorial_projection.html>`_ 
+* `Reading, writing and plotting SO maps  <https://pspy.readthedocs.org/en/latest/tutorial_io.html>`_
+* `Projecting HEALPIX to CAR  <https://pspy.readthedocs.org/en/latest/tutorial_projection.html>`_
+* `Generate spin0 and spin2 spectra for CAR  <https://pspy.readthedocs.org/en/latest/tutorial_spectra_car_spin0and2.html>`_
+* `Generate spin0 and spin2 spectra for HEALPIX  <https://pspy.readthedocs.org/en/latest/tutorial_spectra_healpix_spin0and2.html>`_
 
-  
+
 Main high-level modules:
 ========================
 .. toctree::
