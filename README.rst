@@ -1,4 +1,6 @@
-# pspy
+====
+pspy
+====
 
 .. image:: https://travis-ci.com/thibautlouis/pspy.svg?branch=master
    :target: https://travis-ci.com/thibautlouis/pspy
