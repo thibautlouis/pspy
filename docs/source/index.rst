@@ -11,7 +11,7 @@ If you want to work on the code from `GitHub <https://github.com/thibautlouis/ps
 Ipython notebooks:
 ==================
 
-`Generation of simulations and projection  <https://pspy.readthedocs.org/en/latest/tutorial_projection.html>`_ 
+`projecting HEALPIX to CAR  <https://pspy.readthedocs.org/en/latest/tutorial_projection.html>`_ 
 
   
 Main high-level modules:
